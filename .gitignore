@@ -9,7 +9,7 @@ dist/
 build/
 *.egg
 
-# Virtual environments
+# Virtual environmentsss
 venv/
 env/
 ENV/
@@ -28,11 +28,6 @@ vosk-model-*/
 vosk-model-en-us-*/
 vosk-model-fr-*/
 vosk-model-ar-*/
-
-# WLASL dataset (large video files and dataset)
-WLASL/videos/
-WLASL/*.json
-WLASL/*.txt
 
 # Generated ASL output videos
 asl_outputs/
