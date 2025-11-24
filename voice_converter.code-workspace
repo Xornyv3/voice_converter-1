@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "voice_converter",
+			"path": "."
+		},
+		{
+			"name": "WLASL",
+			"path": "../../Downloads/WLASL"
+		}
+	],
+	"settings": {}
+}

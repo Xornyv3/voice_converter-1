@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Vosk speech recognition models (large, downloadable)
+vosk-model-*/
+vosk-model-en-us-*/
+vosk-model-fr-*/
+vosk-model-ar-*/
+
+# WLASL dataset (large video files and dataset)
+WLASL/videos/
+WLASL/*.json
+WLASL/*.txt
+
+# Generated ASL output videos
+asl_outputs/
+*.mp4
+*.avi
+*.mov
+
+# Whisper models (auto-downloaded)
+*.pt
+models/
+
+# Audio files
+*.wav
+*.mp3
+*.ogg
+*.flac
+*.m4a
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# OS files
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Configuration files with sensitive data
+.env
+*.env
+config.local.*
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Test outputs
+test_outputs/
