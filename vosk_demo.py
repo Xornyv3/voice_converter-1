@@ -159,46 +159,32 @@ def main():
         print("ℹ️  Non-English language → ASL output not available.")
         sys.exit(0)
 
-    # Generate ASL output (EN only)
-    print("\n🎨 Generating ASL sign language output...")
+    # Generate ASL video (EN only) - Optimized WLASL word-level
+    print("\n🎨 Generating ASL sign language video...")
     
-    # Try image-based generation first (Kaggle dataset)
     try:
-        from asl_image_generator import generate_asl_output
+        from wlasl_generator import WLASLGenerator
         
-        # Generate all three formats
-        gif_path = generate_asl_output(full_text, 'gif')
-        print(f"✅ ASL GIF created → {gif_path}")
+        # Initialize generator (loads vocabulary once)
+        generator = WLASLGenerator()
         
-        img_path = generate_asl_output(full_text, 'image')
-        print(f"✅ ASL image strip created → {img_path}")
+        # Generate video
+        output_path = generator.generate_video(full_text)
         
-        print(f"\n🎉 Success! Open the files to see your ASL translation!")
+        print(f"\n🎉 Success! ASL video created!")
+        print(f"📺 Open: {output_path}")
         sys.exit(0)
         
-    except Exception as img_error:
-        print(f"⚠️  Image generation failed: {img_error}")
-        print("ℹ️  Trying video generation (WLASL dataset)...")
+    except FileNotFoundError as fnf_error:
+        print(f"❌ WLASL dataset not found: {fnf_error}")
+        print(f"💡 Solution: Run 'python download_wlasl.py' to download the dataset")
+        sys.exit(1)
         
-        # Fallback to video generation if available
-        ts = int(time.time())
-        out_path = os.path.join(ASL_OUTPUT_DIR, f"asl_{ts}.mp4")
-        try:
-            generate_asl_video(
-                phrase=           full_text,
-                class_list_path=  CLASS_LIST,
-                nslt_json_path=   NSLT_JSON,
-                videos_dir=       VIDEOS_DIR,
-                out_path=         out_path,
-                manual_reorders=  manual_rules
-            )
-            print(f"🎞 ASL video generated → {out_path}\n")
-        except Exception as e:
-            print(f"❌ Both generation methods failed")
-            print(f"💡 Make sure either:")
-            print(f"   - Kaggle ASL dataset is in: kaggle_asl_dataset/asl_dataset/")
-            print(f"   - WLASL videos are in: WLASL/videos/")
-            sys.exit(1)
+    except Exception as e:
+        print(f"❌ Error generating ASL video: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

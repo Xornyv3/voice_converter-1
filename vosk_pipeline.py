@@ -8,7 +8,8 @@ import sounddevice as sd
 from vosk import Model, KaldiRecognizer, SetLogLevel
 SetLogLevel(-1)  # Suppress Vosk logs
 
-from translate_sentence import generate_asl_video
+# Import WLASL generator
+from wlasl_generator import WLASLGenerator
 
 # Default to English
 lang = "en"
@@ -19,18 +20,23 @@ model      = Model(model_path)
 recognizer = KaldiRecognizer(model, 16000)
 print("✅ Model loaded successfully!")
 
+# Initialize WLASL generator (loads vocabulary once for efficiency)
+print("📚 Loading WLASL vocabulary...")
+try:
+    wlasl_gen = WLASLGenerator()
+    print("✅ WLASL ready!")
+except Exception as e:
+    print(f"❌ Error loading WLASL: {e}")
+    print(f"💡 Run: python download_wlasl.py")
+    sys.exit(1)
+
 q = queue.Queue()
 def callback(indata, frames, time_, status):
     if status: print(status, file=sys.stderr)
     q.put(bytes(indata))
 
-CLASS_LIST      = "WLASL/wlasl_class_list.txt"
-NSLT_JSON       = "WLASL/nslt_2000.json"
-VIDEOS_DIR      = "WLASL/videos"
-MANUAL_REORDERS = "manual_reorders.json"
-ASL_OUT_DIR     = "asl_outputs"
+ASL_OUT_DIR = "asl_outputs"
 os.makedirs(ASL_OUT_DIR, exist_ok=True)
-manual_rules = json.load(open(MANUAL_REORDERS, encoding="utf-8")) if os.path.isfile(MANUAL_REORDERS) else {}
 
 with sd.RawInputStream(samplerate=16000, blocksize=4000,
                        dtype="int16", channels=1,
@@ -49,20 +55,14 @@ with sd.RawInputStream(samplerate=16000, blocksize=4000,
             if not cleaned:
                 continue
 
-            print(f"STT ➔ «{cleaned}»")
-            timestamp = int(time.time())
-            out_file  = os.path.join(ASL_OUT_DIR, f"asl_{timestamp}.mp4")
-
-            generate_asl_video(
-                phrase=          cleaned,
-                class_list_path= CLASS_LIST,
-                nslt_json_path=  NSLT_JSON,
-                videos_dir=      VIDEOS_DIR,
-                out_path=        out_file,
-                manual_reorders= manual_rules
-            )
-
-            print(f"🎞 ASL generated → {out_file}\n")
+            print(f"\n📝 Heard: «{cleaned}»")
+            print(f"🎬 Generating ASL video...")
+            
+            try:
+                out_file = wlasl_gen.generate_video(cleaned)
+                print(f"✅ Video: {out_file}\n")
+            except Exception as e:
+                print(f"❌ Error: {e}\n")
 
     except KeyboardInterrupt:
         print("\n👋 Stopped!")
