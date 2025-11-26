@@ -16,3 +16,15 @@ kagglehub>=0.2.0
 # Image Processing (for fallback)
 Pillow>=10.0.0
 
+# Pose Estimation & Avatar Animation
+# mediapipe>=0.10.0  # Not compatible with Python 3.13 yet - use 3.11 or 3.12
+opencv-python>=4.8.0
+
+# GUI Framework
+customtkinter>=5.2.0
+pygame>=2.5.0
+
+# 3D Graphics & Animation
+PyOpenGL>=3.1.7
+PyOpenGL-accelerate>=3.1.7
+
