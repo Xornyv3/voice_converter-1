@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-import os, re, queue, sys, json, time
+# Suppress Vosk verbose logging (must be set BEFORE importing vosk)
+import os
+os.environ['VOSK_LOG_LEVEL'] = '-1'
+
+import re, queue, sys, json, time
 import sounddevice as sd
-from vosk import Model, KaldiRecognizer
+from vosk import Model, KaldiRecognizer, SetLogLevel
+SetLogLevel(-1)  # Suppress Vosk logs
 
 from translate_sentence import generate_asl_video
 
-lang_choice = input("Choisissez la langue (en/fr/ar) : ").strip().lower()
+# Default to English
+lang = "en"
 model_paths = { "en":"vosk-model-en-us-0.22", "fr":"vosk-model-fr-0.22", "ar":"vosk-model-ar-mgb2-0.4" }
-lang = {"fr":"fr","ar":"ar"}.get(lang_choice,"en")
 model_path = model_paths[lang]
+print("📥 Loading Vosk model (English)...")
 model      = Model(model_path)
 recognizer = KaldiRecognizer(model, 16000)
+print("✅ Model loaded successfully!")
 
 q = queue.Queue()
 def callback(indata, frames, time_, status):
@@ -28,7 +35,7 @@ manual_rules = json.load(open(MANUAL_REORDERS, encoding="utf-8")) if os.path.isf
 with sd.RawInputStream(samplerate=16000, blocksize=4000,
                        dtype="int16", channels=1,
                        callback=callback):
-    print("🎤 Parlez… (Ctrl-C pour quitter)")
+    print("🎤 Speak now... (Ctrl+C to quit)")
     try:
         while True:
             data = q.get()
@@ -55,8 +62,8 @@ with sd.RawInputStream(samplerate=16000, blocksize=4000,
                 manual_reorders= manual_rules
             )
 
-            print(f"🎞 ASL généré → {out_file}\n")
+            print(f"🎞 ASL generated → {out_file}\n")
 
     except KeyboardInterrupt:
-        print("\n👋 Arrêt !")
+        print("\n👋 Stopped!")
         sys.exit(0)

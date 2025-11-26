@@ -25,10 +25,8 @@ ENV/
 
 # Vosk speech recognition models (large, downloadable)
 vosk-model-*/
-vosk-model-en-us-*/
-vosk-model-fr-*/
-vosk-model-ar-*/
-
+kaggle_asl_dataset/
+vosk-model-en-us-0.22/
 # Generated ASL output videos
 asl_outputs/
 *.mp4

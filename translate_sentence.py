@@ -20,7 +20,13 @@ try:
 except Exception:
     def num2words(n: int) -> str:  # minimal safety net
         return str(n)
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+
+# Updated import for moviepy 2.x
+try:
+    from moviepy.editor import VideoFileClip, concatenate_videoclips
+except ImportError:
+    from moviepy.video.io.VideoFileClip import VideoFileClip
+    from moviepy.video.compositing.CompositeVideoClip import concatenate_videoclips
 
 # -------------------------
 # Lexicon pieces (conservative)
