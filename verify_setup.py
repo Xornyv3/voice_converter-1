@@ -15,13 +15,11 @@ print(f"   {sys.version}")
 # Test 2: Import dependencies
 print("\n2. Testing Dependencies:")
 dependencies = [
-    "vosk",
+    "faster_whisper",
     "sounddevice",
     "numpy",
     "moviepy",
-    "num2words",
-    "arabic_reshaper",
-    "bidi.algorithm",
+    "kagglehub",
 ]
 
 failed = []
@@ -33,39 +31,31 @@ for dep in dependencies:
         print(f"   ❌ {dep} - {e}")
         failed.append(dep)
 
-# Test 3: Check model
-print("\n3. Checking Vosk Model:")
+# Test 3: Check WLASL dataset
+print("\n3. Checking WLASL Dataset:")
 import os
-model_path = "vosk-model-en-us-0.22"
-if os.path.isdir(model_path):
-    print(f"   ✅ English model found at {model_path}")
-    # Check for key files
-    required = ["am/final.mdl", "graph/HCLG.fst", "graph/words.txt"]
-    for req in required:
-        full_path = os.path.join(model_path, req)
-        if os.path.exists(full_path):
-            print(f"      ✅ {req}")
-        else:
-            print(f"      ❌ {req} missing")
-else:
-    print(f"   ❌ Model directory not found: {model_path}")
-
-# Test 4: Check WLASL data
-print("\n4. Checking WLASL Data:")
-wlasl_files = [
-    "WLASL/wlasl_class_list.txt",
-    "WLASL/nslt_2000.json",
-    "WLASL/videos"
-]
-for wf in wlasl_files:
-    if os.path.exists(wf):
-        if os.path.isdir(wf):
-            vid_count = len([f for f in os.listdir(wf) if f.endswith('.mp4')])
-            print(f"   ✅ {wf} ({vid_count} videos)")
-        else:
-            print(f"   ✅ {wf}")
+wlasl_path = os.path.join(os.path.expanduser("~"), ".cache", "kagglehub", 
+                          "datasets", "risangbaskoro", "wlasl-processed", "versions", "5")
+if os.path.exists(wlasl_path):
+    videos_dir = os.path.join(wlasl_path, "videos")
+    if os.path.exists(videos_dir):
+        video_count = len([f for f in os.listdir(videos_dir) if f.endswith('.mp4')])
+        print(f"   ✅ WLASL dataset found")
+        print(f"   ✅ Videos: {video_count}")
     else:
-        print(f"   ❌ {wf} missing")
+        print(f"   ⚠️ Videos directory not found")
+else:
+    print(f"   ❌ WLASL dataset not found")
+    print(f"   💡 Run: python download_wlasl.py")
+
+# Test 4: Check Faster-Whisper model cache
+print("\n4. Checking Faster-Whisper Model:")
+model_cache = os.path.join(os.path.expanduser("~"), ".cache", "huggingface", 
+                           "hub", "models--Systran--faster-whisper-base")
+if os.path.exists(model_cache):
+    print(f"   ✅ Base model cached")
+else:
+    print(f"   ⚠️ Model not cached (will download on first run)")
 
 # Test 5: Microphone
 print("\n5. Testing Microphone Access:")
@@ -78,7 +68,7 @@ try:
         default = sd.query_devices(kind='input')
         print(f"   Default: {default['name']}")
     else:
-        print("   ⚠️  No input devices found")
+        print("   ⚠️ No input devices found")
 except Exception as e:
     print(f"   ❌ Error: {e}")
 
@@ -86,8 +76,11 @@ except Exception as e:
 print("\n" + "=" * 60)
 if failed:
     print(f"❌ SETUP INCOMPLETE - Missing: {', '.join(failed)}")
+    print("\n💡 Install missing packages:")
+    print("   pip install " + " ".join(failed))
 else:
     print("✅ ALL DEPENDENCIES INSTALLED!")
     print("\nReady to run:")
-    print('   python vosk_demo.py')
+    print("   .\\run_demo.bat (or .\\run_demo.ps1)")
+    print("\nChoose option 1 to start!")
 print("=" * 60)
